@@ -30,6 +30,30 @@ export class StoreService {
     return this.store$.pipe(distinctUntilKeyChanged('currentUser'));
   }
 
+    get isLoading$(): Observable<boolean> {
+    return this.store$.pipe(map((state) => state.isLoading), distinctUntilChanged());
+  }
+
+  get rolesList$(): Observable<{ [key: number]: string }> {
+    return this.store$.pipe(map((state) => state.rolesList), distinctUntilChanged());
+  }
+
+  get authUser$(): Observable<AuthUser> {
+    return this.store$.pipe(map((state) => state.authUser), distinctUntilChanged());
+  }
+
+  get currentUser$(): Observable<CurrentUser | null> {
+    return this.store$.pipe(map((state) => state.currentUser), distinctUntilChanged());
+  }
+
+  get user$(): Observable<Users> {
+    return this.store$.pipe(map((state) => state.user), distinctUntilChanged());
+  }
+
+  get vmViewMtpRoleAccess$(): Observable<VmViewMtpRoleAccess> {
+    return this.store$.pipe(map((state) => state.vmViewMtpRoleAccess), distinctUntilChanged());
+  }
+
   constructor() {
     this.#store$ = new BehaviorSubject(initialState);
     this.store$ = this.#store$.asObservable();
