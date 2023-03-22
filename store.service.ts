@@ -46,6 +46,13 @@ export class StoreService {
     return this.store$.pipe(map((state) => state.currentUser), distinctUntilChanged());
   }
 
+  get currentUser$(): Observable<State[keyof State] | null> {
+    return this.#store$.pipe(
+      distinctUntilKeyChanged('currentUser'),
+      map((state) => state?.currentUser),
+    );
+  }
+
   get user$(): Observable<Users> {
     return this.store$.pipe(map((state) => state.user), distinctUntilChanged());
   }
