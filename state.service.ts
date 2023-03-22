@@ -11,18 +11,18 @@ const initialState = new State();
 @Injectable({
   providedIn: 'root',
 })
-export class StoreService {
+export class StateService {
   // BehaviorSubject holding the application state
   protected stateSubject$: BehaviorSubject<State> = new BehaviorSubject<State>(initialState);
 
   // Expose the entire state as an observable
-  store$: Observable<State> = this.stateSubject$.asObservable();
+  state$: Observable<State> = this.stateSubject$.asObservable();
 
   // Subject for updating the state with partial state updates
   private stateUpdates$: Subject<Partial<State>> = new Subject<Partial<State>>();
 
   // Getter for the 'isLoading' state property
-  get isLoading$(): Observable<boolean> {
+  get stateIsLoading$(): Observable<boolean> {
     return this.stateSubject$.pipe(
       distinctUntilKeyChanged('isLoading'),
       map((state) => state?.isLoading),
@@ -30,7 +30,7 @@ export class StoreService {
   }
 
   // Getter for the 'currentUser' state property
-  get currentUser$(): Observable<CurrentUser | null> {
+  get stateCurrentUser$(): Observable<CurrentUser | null> {
     return this.stateSubject$.pipe(
       distinctUntilKeyChanged('currentUser'),
       map((state) => state?.currentUser),
@@ -45,8 +45,8 @@ export class StoreService {
   }
 
   // Update the state with a partial state update
-  updateStore(storeUpdate: Partial<State>): void {
-    this.stateUpdates$.next(storeUpdate);
+  patchState(stateUpdate: Partial<State>): void {
+    this.stateUpdates$.next(stateUpdate);
   }
 
   // Select a single key from the state and return an observable of that key's value
