@@ -12,26 +12,26 @@ const initialState = new State();
   providedIn: 'root',
 })
 export class StoreService {
-  // BehaviorSubject to store the state, allowing subscribers to receive the latest state updates
-  protected storeSubject$: BehaviorSubject<State> = new BehaviorSubject<State>(initialState);
+  // BehaviorSubject holding the application state
+  protected stateSubject$: BehaviorSubject<State> = new BehaviorSubject<State>(initialState);
 
-  // Expose the entire store as an observable for subscribers to receive the entire state
-  store$: Observable<State> = this.storeSubject$.asObservable();
+  // Expose the entire state as an observable
+  store$: Observable<State> = this.stateSubject$.asObservable();
 
-  // Subject for updating the store with partial state updates
-  private storeUpdates$: Subject<Partial<State>> = new Subject<Partial<State>>();
+  // Subject for updating the state with partial state updates
+  private stateUpdates$: Subject<Partial<State>> = new Subject<Partial<State>>();
 
-  // Getter for the 'isLoading' state property, returning an Observable<boolean>
+  // Getter for the 'isLoading' state property
   get isLoading$(): Observable<boolean> {
-    return this.storeSubject$.pipe(
+    return this.stateSubject$.pipe(
       distinctUntilKeyChanged('isLoading'),
       map((state) => state?.isLoading),
     );
   }
 
-  // Getter for the 'currentUser' state property, returning an Observable<CurrentUser | null>
+  // Getter for the 'currentUser' state property
   get currentUser$(): Observable<CurrentUser | null> {
-    return this.storeSubject$.pipe(
+    return this.stateSubject$.pipe(
       distinctUntilKeyChanged('currentUser'),
       map((state) => state?.currentUser),
     );
@@ -39,31 +39,31 @@ export class StoreService {
 
   constructor() {
     // Combine partial state updates with the current state to produce a new state
-    this.storeUpdates$
+    this.stateUpdates$
       .pipe(scan((acc, curr) => ({ ...acc, ...curr }), initialState))
-      .subscribe(this.storeSubject$);
+      .subscribe(this.stateSubject$);
   }
 
-  // Update the store with a partial state update
+  // Update the state with a partial state update
   updateStore(storeUpdate: Partial<State>): void {
-    this.storeUpdates$.next(storeUpdate);
+    this.stateUpdates$.next(storeUpdate);
   }
 
-  // Query the store for a single key and return an observable of that key's value
-  queryStoreSingleKey(keyString: keyof State): Observable<State[keyof State]> {
-    return this.storeSubject$.pipe(
+  // Select a single key from the state and return an observable of that key's value
+  selectSingleKey(keyString: keyof State): Observable<State[keyof State]> {
+    return this.stateSubject$.pipe(
       distinctUntilKeyChanged(keyString),
       map((key) => key?.[keyString]),
     );
   }
 
-  // Query the store for multiple keys and return an observable of an object with the specified keys
-  queryStoreMultiKeys(keyArr: (keyof State)[]): Observable<Partial<State>> {
-    return this.storeSubject$.pipe(
+  // Select multiple keys from the state and return an observable of an object with the specified keys
+  selectMultipleKeys(keyArr: (keyof State)[]): Observable<Partial<State>> {
+    return this.stateSubject$.pipe(
       distinctUntilChanged((prev, curr) => !keyArr.some((key) => prev[key] !== curr[key])),
       map((val) => {
-        const newKey = [...keyArr];
-        return newKey.reduce((acc, key: keyof State) => ({ ...acc, [key]: val[key] }), {});
+        const selectedKeys = [...keyArr];
+        return selectedKeys.reduce((acc, key: keyof State) => ({ ...acc, [key]: val[key] }), {});
       }),
     );
   }
