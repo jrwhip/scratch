@@ -12,16 +12,16 @@ const initialState = new State();
   providedIn: 'root',
 })
 export class StoreService {
-  // Store the state in a BehaviorSubject, so subscribers can receive the latest state updates.
+  // BehaviorSubject to store the state, allowing subscribers to receive the latest state updates
   protected storeSubject$: BehaviorSubject<State> = new BehaviorSubject<State>(initialState);
 
-  // Exports the entire store as an observable, so subscribers can receive the entire state.
+  // Expose the entire store as an observable for subscribers to receive the entire state
   store$: Observable<State> = this.storeSubject$.asObservable();
 
-  // Subject for updating the store with partial state updates.
+  // Subject for updating the store with partial state updates
   private storeUpdates$: Subject<Partial<State>> = new Subject<Partial<State>>();
 
-  // Observable for the 'isLoading' state property.
+  // Getter for the 'isLoading' state property, returning an Observable<boolean>
   get isLoading$(): Observable<boolean> {
     return this.storeSubject$.pipe(
       distinctUntilKeyChanged('isLoading'),
@@ -29,7 +29,7 @@ export class StoreService {
     );
   }
 
-  // Observable for the 'currentUser' state property.
+  // Getter for the 'currentUser' state property, returning an Observable<CurrentUser | null>
   get currentUser$(): Observable<CurrentUser | null> {
     return this.storeSubject$.pipe(
       distinctUntilKeyChanged('currentUser'),
@@ -38,18 +38,18 @@ export class StoreService {
   }
 
   constructor() {
-    // Combine partial state updates with the current state to produce a new state.
+    // Combine partial state updates with the current state to produce a new state
     this.storeUpdates$
       .pipe(scan((acc, curr) => ({ ...acc, ...curr }), initialState))
       .subscribe(this.storeSubject$);
   }
 
-  // Update the store with a partial state update.
+  // Update the store with a partial state update
   updateStore(storeUpdate: Partial<State>): void {
     this.storeUpdates$.next(storeUpdate);
   }
 
-  // Query the store for a single key and return an observable of that key's value.
+  // Query the store for a single key and return an observable of that key's value
   queryStoreSingleKey(keyString: keyof State): Observable<State[keyof State]> {
     return this.storeSubject$.pipe(
       distinctUntilKeyChanged(keyString),
@@ -57,7 +57,7 @@ export class StoreService {
     );
   }
 
-  // Query the store for multiple keys and return an observable of an object with the specified keys.
+  // Query the store for multiple keys and return an observable of an object with the specified keys
   queryStoreMultiKeys(keyArr: (keyof State)[]): Observable<Partial<State>> {
     return this.storeSubject$.pipe(
       distinctUntilChanged((prev, curr) => !keyArr.some((key) => prev[key] !== curr[key])),
