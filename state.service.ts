@@ -22,7 +22,7 @@ export class StateService {
   private stateUpdates$: Subject<Partial<State>> = new Subject<Partial<State>>();
 
   // Getter for the 'isLoading' state property
-  get stateIsLoading$(): Observable<boolean> {
+  get isLoading$(): Observable<boolean> {
     return this.stateSubject$.pipe(
       distinctUntilKeyChanged('isLoading'),
       map((state) => state?.isLoading),
@@ -30,7 +30,7 @@ export class StateService {
   }
 
   // Getter for the 'currentUser' state property
-  get stateCurrentUser$(): Observable<CurrentUser | null> {
+  get currentUser$(): Observable<CurrentUser | null> {
     return this.stateSubject$.pipe(
       distinctUntilKeyChanged('currentUser'),
       map((state) => state?.currentUser),
@@ -50,7 +50,7 @@ export class StateService {
   }
 
   // Select a single key from the state and return an observable of that key's value
-  selectSingleKey(keyString: keyof State): Observable<State[keyof State]> {
+  selectKey(keyString: keyof State): Observable<State[keyof State]> {
     return this.stateSubject$.pipe(
       distinctUntilKeyChanged(keyString),
       map((key) => key?.[keyString]),
@@ -58,7 +58,7 @@ export class StateService {
   }
 
   // Select multiple keys from the state and return an observable of an object with the specified keys
-  selectMultipleKeys(keyArr: (keyof State)[]): Observable<Partial<State>> {
+  selectKeys(keyArr: (keyof State)[]): Observable<Partial<State>> {
     return this.stateSubject$.pipe(
       distinctUntilChanged((prev, curr) => !keyArr.some((key) => prev[key] !== curr[key])),
       map((val) => {
