@@ -1,7 +1,9 @@
 import { User as CurrentUser } from 'oidc-client';
 
 export class State {
+  // Initialize isLoading with a default value of false
   isLoading = false;
 
-  currentUser!: CurrentUser | null;
+  // Initialize currentUser with a default value of null
+  currentUser: CurrentUser | null = null;
 }
