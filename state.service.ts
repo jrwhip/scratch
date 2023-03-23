@@ -19,13 +19,13 @@ export class StateService {
   state$: Observable<State> = this.stateSubject$.asObservable();
 
   // Subject for updating the state with partial state updates
-  private stateUpdates$: Subject<Partial<State>> = new Subject<Partial<State>>();
+  private partialStateUpdate$: Subject<Partial<State>> = new Subject<Partial<State>>();
 
   // Getter for the 'isLoading' state property
   get isLoading$(): Observable<boolean> {
     return this.stateSubject$.pipe(
       distinctUntilKeyChanged('isLoading'),
-      map((state) => state?.isLoading),
+      map((state) => state.isLoading),
     );
   }
 
@@ -33,20 +33,20 @@ export class StateService {
   get currentUser$(): Observable<CurrentUser | null> {
     return this.stateSubject$.pipe(
       distinctUntilKeyChanged('currentUser'),
-      map((state) => state?.currentUser),
+      map((state) => state.currentUser),
     );
   }
 
   constructor() {
     // Combine partial state updates with the current state to produce a new state
-    this.stateUpdates$
+    this.partialStateUpdate$
       .pipe(scan((acc, curr) => ({ ...acc, ...curr }), initialState))
       .subscribe(this.stateSubject$);
   }
 
   // Update the state with a partial state update
-  patchState(stateUpdate: Partial<State>): void {
-    this.stateUpdates$.next(stateUpdate);
+  patchState(partialState: Partial<State>): void {
+    this.partialStateUpdate$.next(partialState);
   }
 
   // Select a single key from the state and return an observable of that key's value
