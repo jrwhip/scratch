@@ -6,6 +6,7 @@ import { distinctUntilChanged, distinctUntilKeyChanged, map, scan } from 'rxjs/o
 
 import { State } from './state.model';
 
+// Initial state for the application
 const initialState = new State();
 
 @Injectable({
@@ -53,18 +54,15 @@ export class StateService {
   selectKey(keyString: keyof State): Observable<State[keyof State]> {
     return this.stateSubject$.pipe(
       distinctUntilKeyChanged(keyString),
-      map((key) => key?.[keyString]),
+      map((key) => key[keyString]),
     );
   }
 
   // Select multiple keys from the state and return an observable of an object with the specified keys
   selectKeys(keyArr: (keyof State)[]): Observable<Partial<State>> {
     return this.stateSubject$.pipe(
-      distinctUntilChanged((prev, curr) => !keyArr.some((key) => prev[key] !== curr[key])),
-      map((val) => {
-        const selectedKeys = [...keyArr];
-        return selectedKeys.reduce((acc, key: keyof State) => ({ ...acc, [key]: val[key] }), {});
-      }),
+      distinctUntilChanged((prev, curr) => keyArr.some((key) => prev[key] !== curr[key])),
+      map((val) => keyArr.reduce((acc, key: keyof State) => ({ ...acc, [key]: val[key] }), {})),
     );
   }
 }
