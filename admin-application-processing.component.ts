@@ -101,7 +101,8 @@ export class AdminApplicationProcessingComponent {
     programFein: [
       ,
       [Numeric.validate('FEIN'), MinLength.validate(9), MaxLength.validate(9)]
-    ]
+    ],
+    paymentPercentage: []
   });
 
   selectForm = this.fb.group({
