@@ -46,6 +46,8 @@ paymentPercentage$ = this.paymentForm
     startWith(this.paymentForm.get('paymentPercentage')!.value ?? 0)
 );
 
+HEY FUCKER!
+
 this.payments$ = combineLatest([
     this.baseRate$,
     this.totalChildren$,
