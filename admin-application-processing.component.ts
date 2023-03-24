@@ -113,6 +113,7 @@ export class AdminApplicationProcessingComponent {
     enhancementApprovedFlag: [false]
   });
 
+
   constructor(
     private confirmationService: ConfirmationService,
     private dialogService: DialogService,
@@ -126,7 +127,20 @@ export class AdminApplicationProcessingComponent {
     private workerApiService: WorkerApiService
   ) {
     this.deleting$ = of({ loading: false });
+  }
 
+  ngOnInit() {
+    this.initPayments();
+    this.initCombinedParamsUser();
+    this.initApplicationDetails();
+    this.initApplicationPaymentView();
+    this.initPaymentView();
+    this.initVmMonthlyGrantExpenditures();
+    this.initMonthlyGrantExpenditures();
+    this.initVm();
+  }
+
+  private initPayments() {
     this.payments$ = combineLatest([this.baseRate$, this.totalChildren$]).pipe(
       map(([baseRate, totalChildren]) => {
         const subTotal = baseRate * totalChildren;
@@ -135,55 +149,142 @@ export class AdminApplicationProcessingComponent {
           subTotal,
           baseRate,
           fullTimeEligiblePayment: subTotal,
-          partTimeEligiblePayment
+          partTimeEligiblePayment,
         };
       }),
       distinctUntilChanged(),
       shareReplay()
     );
+  }
 
-    const combinedParamsUser$ = forkJoin([
+  private initCombinedParamsUser() {
+    this.combinedParamsUser$ = forkJoin([
       this.route.params.pipe(take(1)),
-      this.storeService.user$.pipe(take(1))
+      this.storeService.user$.pipe(take(1)),
     ]).pipe(shareReplay());
+  }
 
-    this.applicationDetails$ = combinedParamsUser$.pipe(
-      mergeMap(([params, user]) => {
-        return this.workerApiService
+  private initApplicationDetails() {
+    this.applicationDetails$ = this.combinedParamsUser$.pipe(
+      mergeMap(([params, user]) =>
+        this.workerApiService
           .getApplicationById(params['id'])
-          .pipe(tap(this.setupTemplateFlags.bind(this, user.profile.sub)));
-      }),
+          .pipe(tap(this.setupTemplateFlags.bind(this, user.profile.sub)))
+      ),
       tap(this.calcTotalItemValues),
       shareReplay()
     );
+  }
 
-    this.applicationPaymentView$ = combinedParamsUser$.pipe(
-      mergeMap(([params]) => {
-        return this.workerApiService
-          .getApplicationPaymentView(params['id'])
-          .pipe(
-            map((res) => {
-              const vmApplicationPaymentView = res.reduce(
-                (acc: VmApplicationPaymentView[], curr) => {
-                  const paymentDate = RegExp(/\d{4}-\d{1,2}/, 'g').exec(
-                    curr.details
-                  );
-                  const dateArr = (paymentDate?.[0] ?? '').split('-');
-                  const d = new Date(
-                    parseInt(dateArr[0]),
-                    parseInt(dateArr[1]) - 1
-                  );
-                  return [...acc, { ...curr, vmDetailsDate: d }];
-                },
-                []
-              );
-              return vmApplicationPaymentView.sort(
-                (a, b) => a.vmDetailsDate.valueOf() - b.vmDetailsDate.valueOf()
-              );
-            })
+  private initApplicationPaymentView() {
+    this.applicationPaymentView$ = this.combinedParamsUser$.pipe(
+      mergeMap(([params]) =>
+        this.workerApiService.getApplicationPaymentView(params['id'])
+      ),
+      map((res) =>
+        res.map((curr) => {
+          const paymentDate = RegExp(/\d{4}-\d{1,2}/, 'g').exec(curr.details);
+          const dateArr = (paymentDate?.[0] ?? '').split('-');
+          const d = new Date(
+            parseInt(dateArr[0]),
+            parseInt(dateArr[1]) - 1
           );
-      })
+          return { ...curr, vmDetailsDate: d };
+        })
+      ),
+      map((res) => res.sort((a, b) => a.vmDetailsDate.valueOf() - b.vmDetailsDate.valueOf())),
+      shareReplay()
     );
+  }
+
+  private initPaymentView() {
+    this.paymentView$ = this.combinedParamsUser$.pipe(
+      mergeMap(([params]) =>
+        this.workerApiService.getPaymentView(params['id'])
+      )
+    );
+  }
+
+  private initVmMonthlyGrantExpenditures() {
+    this.vmMonthlyGrantExpenditures$ = combineLatest([
+      this.route.params,
+      this.applicationDetails$,
+    ]).pipe(
+      mergeMap(([{ id }, { monthlyReports }]) => {
+        const vmMonthlyGrantExpenditures$ = monthlyReports.map((report) =>
+          this.workerApiService.getVmMonthlyGrantExpenditures(
+            id,
+            report.month,
+            report.year
+          )
+        );
+        return forkJoin(vmMonthlyGrantExpenditures$);
+      }),
+      shareReplay()
+    );
+  }
+
+  private initMonthlyGrantExpenditures() {
+    this.monthlyGrantExpenditures$ = combineLatest([
+      this.selectForm.valueChanges,
+      this.vmMonthlyGrantExpenditures$,
+      this.applicationDetails$,
+    ]).pipe(
+      map(
+        ([
+          {
+            grantExpendituresMonth: { month, year },
+          },
+          vmMonthlyGrantExpenditures,
+          applicationDetails,
+        ]) => {
+          const monthlyReports = applicationDetails.monthlyReports.find(
+            (res) => res.month === month && res.year === year
+          );
+          const totalEnrollments =
+            monthlyReports?.monthlyEnrollments.reduce(
+              (acc: number, curr: MonthlyReportEnrollmentEntity) =>
+                acc + curr.enrollment,
+              0
+            ) ?? 0;
+          const vmMonthlyGrantExpenditure =
+            vmMonthlyGrantExpenditures.find(
+              (res) => res.month === month && res.year === year
+            ) ?? new VmMonthlyGrantExpenditures();
+          return {...vmMonthlyGrantExpenditure,
+            monthlyEnrollments: monthlyReports?.monthlyEnrollments,
+            totalEnrollments,
+          };
+        }
+      )
+    );
+  }
+
+  private initVm() {
+    this.vm$ = combineLatest([
+      this.applicationDetails$,
+      this.applicationPaymentView$,
+      this.payments$,
+      this.paymentView$,
+    ]).pipe(
+      map(
+        ([
+          applicationDetails,
+          applicationPaymentView,
+          payments,
+          paymentView,
+        ]) => ({
+          applicationDetails,
+          applicationPaymentView,
+          payments,
+          paymentView,
+        })
+      ),
+      distinctUntilChanged(),
+      shareReplay()
+    );
+  }
+
 
     this.paymentView$ = combinedParamsUser$.pipe(
       mergeMap(([params]) => {
