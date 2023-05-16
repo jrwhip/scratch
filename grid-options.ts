@@ -28,13 +28,17 @@ export class ExamsComponent {
 
   ngOnInit() {
     this.rowData$ = this.route.data.pipe(
-      map((res) => res['gridData']),
       map((res) => {
-        const columnDefs = bindMethodToAgGridOnClick(this, res.gridOptions.columnDefs);
-        console.log('Colnms, ', columnDefs);
-        return res;
+        const gridData = res['gridData'];
+        const columnDefs = bindMethodToAgGridOnClick(this, gridData?.gridOptions?.columnDefs);
+        if (columnDefs) {
+          console.log('Columns, ', columnDefs);
+        }
+        if (gridData?.gridOptions) {
+          console.log('Column Defs: ', gridData.gridOptions);
+        }
+        return gridData;
       }),
-      tap((res) => console.log('Column Defs: ', res.gridOptions)),
     );
   }
 
