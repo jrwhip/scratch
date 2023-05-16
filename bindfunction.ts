@@ -5,11 +5,17 @@ export function bindOnClickFunction<T>(component: T, colDefs: ColDef[]): ColDef[
     if (colDef.cellRendererParams && colDef.cellRendererParams.buttons) {
       colDef.cellRendererParams.buttons = colDef.cellRendererParams.buttons.map(button => {
         const method = component[button.functionName as keyof T] as (...args: any[]) => void;
-        const boundFunction = method.bind(component, button);
-        return {
-          ...button,
-          onClick: boundFunction,
-        };
+
+        if (typeof method === 'function') {
+          const boundFunction = method.bind(component, button);
+          return {
+            ...button,
+            onClick: boundFunction,
+          };
+        } else {
+          console.error(`Method '${button.functionName}' not found in the component or not a function.`);
+          return button;
+        }
       });
     }
     return colDef;
