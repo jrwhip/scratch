@@ -1,0 +1,17 @@
+<ng-container *ngIf="params.buttons.length > 0">
+  <ng-container *ngFor="let button of params.buttons">
+    <fa-icon
+      *ngIf="button.icon; else labelButton"
+      [icon]="button.icon"
+      style="cursor: pointer"
+      data-action="x"
+      class="grid-buttons"
+      (click)="button.onClick(params.data)"
+    ></fa-icon>
+    <ng-template #labelButton>
+      <button class="btn btn-primary" (click)="button.onClick(params.data)">
+        {{ button.label }}
+      </button>
+    </ng-template>
+  </ng-container>
+</ng-container>
