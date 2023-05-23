@@ -25,27 +25,17 @@
           </select>
         </div>
       </div>
-      <div class="d-flex mt-3 justify-content-between align-items-center">
+      <div class="d-flex mt-3 justify-content-around flex-wrap" *ngIf="saving$ | async as saving">
         <!-- Add a saving spinner here -->
-        <ng-container *ngIf="saving$ | async as saving; else notSaving">
-          <div
-            class="spinner-border text-primary me-2"
-            role="status"
-            style="width: 38px; height: 38px"
-          >
-            <span class="visually-hidden">Saving…</span>
-          </div>
-        </ng-container>
+        <span class="d-flex align-items-center" *ngIf="saving; else notSaving">
+          <div class="spinner-border text-primary me-2" role="status" style="width: 38px; height: 38px"></div>
+          <span class="visually-hidden">Saving…</span>
+        </span>
         <ng-template #notSaving>
-          <span class="text-muted">Not Saving...</span>
+          <span>Not Saving...</span>
         </ng-template>
         <!-- Use disabled attribute to disable the save button -->
-        <button
-          type="button"
-          (click)="savePerformanceExamsWithSchedule()"
-          class="btn btn-primary me-2"
-          [disabled]="saving$ | async"
-        >
+        <button type="button" (click)="savePerformanceExamsWithSchedule()" class="btn btn-primary me-2" [disabled]="saving">
           Save
         </button>
         <!-- End of saving spinner -->
