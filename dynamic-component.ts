@@ -1,5 +1,15 @@
-import { Component, ComponentFactoryResolver, Injector, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  Injector,
+  NgModuleFactory,
+  ɵcreateNgModuleFactory as createNgModuleFactory,
+  ɵrenderComponent as renderComponent,
+  OnInit,
+  ViewChild,
+  ViewContainerRef
+} from '@angular/core';
 import { ModalService } from './modal.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-modal-wrapper',
@@ -42,7 +52,6 @@ export class ModalWrapperComponent implements OnInit {
   @ViewChild('dynamicComponentContainer', { read: ViewContainerRef }) containerRef: ViewContainerRef;
 
   constructor(
-    private componentFactoryResolver: ComponentFactoryResolver,
     private injector: Injector,
     private modalService: ModalService
   ) {}
@@ -52,13 +61,22 @@ export class ModalWrapperComponent implements OnInit {
   }
 
   loadDynamicComponent() {
-    this.containerRef.clear();
     const component = this.modalService.getComponent();
-    const factory = this.componentFactoryResolver.resolveComponentFactory(component);
-    const componentRef = factory.create(this.injector);
+    const ngModuleFactory = this.createNgModuleFactory(component);
+    const ngModuleRef = ngModuleFactory.create(this.injector);
 
-    // Attach created component to the view
-    this.containerRef.insert(componentRef.hostView);
+    this.containerRef.clear();
+    const componentFactory = ngModuleRef.componentFactoryResolver.resolveComponentFactory(component);
+    this.containerRef.createComponent(componentFactory);
+  }
+
+  createNgModuleFactory(component: any): NgModuleFactory<any> {
+    @NgModule({
+      declarations: [component],
+      imports: [CommonModule]
+    })
+    class DynamicModule {}
+    return createNgModuleFactory(DynamicModule);
   }
 
   closeModal() {
