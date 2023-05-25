@@ -18,12 +18,14 @@ body, html {
   left: 0;
   right: 0;
   bottom: 0;
+  pointer-events: none; /* ensures mouse events pass through to elements beneath */
 }
 
 .cdk-overlay-pane {
   max-width: 80%; /* adjust to your liking */
   width: auto;
   z-index: 1050; /* to ensure it's above the backdrop */
+  pointer-events: auto; /* ensures the modal itself can receive mouse events */
 }
 
 .modal {
@@ -31,7 +33,6 @@ body, html {
   display: flex;
   flex-direction: column;
   width: 100%;
-  pointer-events: auto;
   background-color: #fff;
   background-clip: padding-box;
   border: 1px solid rgba(0,0,0,.2);
@@ -50,4 +51,5 @@ body, html {
   height: 100vh;
   background-color: #000;
   opacity: .5;
+  pointer-events: auto; /* ensures the backdrop can receive mouse events */
 }
