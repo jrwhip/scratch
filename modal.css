@@ -1,21 +1,33 @@
 /* Global styles (styles.css or styles.scss) */
 
-.cdk-global-overlay-wrapper,
-.cdk-overlay-container {
+body, html {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+}
+
+.cdk-overlay-container,
+.cdk-global-overlay-wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 
 .cdk-overlay-pane {
   max-width: 80%; /* adjust to your liking */
   width: auto;
+  z-index: 1050; /* to ensure it's above the backdrop */
 }
 
 .modal {
   position: relative;
-  z-index: 1050;
   display: flex;
   flex-direction: column;
   width: 100%;
