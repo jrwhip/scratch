@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/dot-notation */
 import { AgGridButtonHandlerService } from '@webteam-shared-client/shared/ui-utilities';
-import { BehaviorSubject, take } from 'rxjs';
+import { BehaviorSubject, take, shareReplay, map, combineLatest, tap, Observable } from 'rxjs';
 import { Component, OnInit } from '@angular/core';
 
 import { Location } from '@angular/common';
@@ -23,109 +23,114 @@ import { ExamsService } from '../exams.service';
   templateUrl: './performance-assign-raters.component.html',
 })
 export class PerformanceAssignRatersComponent implements OnInit {
-  viewPeComponentAssignmentByRatersBS$ = new BehaviorSubject<ViewPeComponentAssignmentByRater[]>(
-    [],
-  );
+  viewPeComponentAssignmentByRatersBS$ = new BehaviorSubject<ViewPeComponentAssignmentByRater[]>([]);
 
+  vm$: Observable<{
+    viewPeComponentAssignmentByRaters: any[];
+    viewRaters: { [key: number]: ViewRater[] };
+    raterTypeCounts: { [index: number]: number };
+    disableStartRatingButton: boolean;
+  }>;
 
-vm$: Observable<{
-  viewPeComponentAssignmentByRaters: any[];
-  viewRaters: { [key: number]: ViewRater[] };
-  raterTypeCounts: { [index: number]: number };
-  disableStartRatingButton: boolean;
-}>;
+  locationState: { data: ViewPeExamsPending } | undefined;
 
-locationState: { data: ViewPeExamsPending } | undefined;
+  showStartRatingButton = true;
+  showAddButtons = false;
 
-showStartRatingButton = true;
+  // Here's a placeholder for your missing variable.
+  // You may need to change its initialization based on your actual requirement.
+  ratingStartedClicked$ = new BehaviorSubject<boolean>(false);
 
-showAddButtons = false;
+  constructor(private examsService: ExamsService, private location: Location, private stateService: StateService, private router: Router) {}
 
-constructor(private examsService: ExamsService, private location: Location) {}
-  const vmAssignRaters$ = this.examsService.vmAssignRaters(this.locationState.data).pipe(
-    shareReplay(1)
-  );
-
-  const viewPeComponentAssignmentByRaters$ = vmAssignRaters$.pipe(
-    map((res) => res.viewPeComponentAssignmentByRaters)
-  );
-
-  const viewRaters$ = vmAssignRaters$.pipe(map((res) => res.viewRaters));
-
-  const raterTypeCounts$ = viewPeComponentAssignmentByRaters$.pipe(
-    map((viewPeComponentAssignmentByRaters) => {
-      // Initializing counters
-      const raterTypeCounts = {
-        '1': 0,
-        '2': 0,
-        '3': 0,
-      };
-
-      // Counting occurrences
-      viewPeComponentAssignmentByRaters.forEach((item) => {
-        if (item.raterTypeId && item.raterTypeId in raterTypeCounts) {
-          raterTypeCounts[item.raterTypeId] += 1;
-        }
-      });
-
-      return raterTypeCounts;
-    })
-  );
-
-  const disableStartRatingButton$ = combineLatest([
-    raterTypeCounts$,
-    this.ratingStartedClicked$
-  ]).pipe(
-    map(([raterTypeCounts, ratingStartedClicked]) => {
-      const peTypeId = this.locationState?.data.peTypeId;
-      const deafRatersAssigned = raterTypeCounts['1'];
-      const cdiRatersAssigned = raterTypeCounts['2'];
-      const interpreterRatersAssigned = raterTypeCounts['3'];
-
-      const isPeType1 =
-        peTypeId === 1 &&
-        (deafRatersAssigned !== 3 ||
-          interpreterRatersAssigned !== 3 ||
-          cdiRatersAssigned !== 3);
-
-      const isPeType2 =
-        peTypeId === 2 &&
-        (deafRatersAssigned !== 3 || interpreterRatersAssigned !== 3 || cdiRatersAssigned !== 3);
-
-      const isPeType3 = peTypeId === 3 && cdiRatersAssigned !== 3;
-
-      return isPeType1 || isPeType2 || isPeType3 || ratingStartedClicked;
-    })
-  );
-
-  this.vm$ = combineLatest([
-    viewPeComponentAssignmentByRaters$,
-    viewRaters$,
-    raterTypeCounts$,
-    disableStartRatingButton$
-  ]).pipe(
-    tap(() => {
-      this.stateService.isLoading = false;
-    }),
-    map(([viewPeComponentAssignmentByRaters, viewRaters, raterTypeCounts, disableStartRatingButton]) => ({
-      viewPeComponentAssignmentByRaters,
-      viewRaters,
-      raterTypeCounts,
-      disableStartRatingButton
-    }))
-  );
-}
-
-ngOnInit() {
-  if (this.locationState) {
-    this.stateService.isLoading = true;
-  } else {
-    this.location.back();
+  ngOnInit() {
+    if (this.locationState) {
+      this.stateService.isLoading = true;
+      this.assignRaters();
+    } else {
+      this.location.back();
+    }
   }
-}
+
+  assignRaters() {
+    const vmAssignRaters$ = this.examsService.vmAssignRaters(this.locationState.data).pipe(
+      shareReplay(1)
+    );
+
+    const viewPeComponentAssignmentByRaters$ = vmAssignRaters$.pipe(
+      map((res) => res.viewPeComponentAssignmentByRaters)
+    );
+
+    const viewRaters$ = vmAssignRaters$.pipe(map((res) => res.viewRaters));
+
+    const raterTypeCounts$ = viewPeComponentAssignmentByRaters$.pipe(
+      map((viewPeComponentAssignmentByRaters) => {
+        // Initializing counters
+        const raterTypeCounts = {
+          '1': 0,
+          '2': 0,
+          '3': 0,
+        };
+
+        // Counting occurrences
+        viewPeComponentAssignmentByRaters.forEach((item) => {
+          if (item.raterTypeId && item.raterTypeId in raterTypeCounts) {
+            raterTypeCounts[item.raterTypeId] += 1;
+          }
+        });
+
+        return raterTypeCounts;
+      })
+    );
+
+    const disableStartRatingButton$ = combineLatest([
+      raterTypeCounts$,
+      this.ratingStartedClicked$
+    ]).pipe(
+      map(([raterTypeCounts, ratingStartedClicked]) => {
+        const peTypeId = this.locationState?.data.peTypeId;
+        const deafRatersAssigned = raterTypeCounts['1'];
+        const cdiRatersAssigned = raterTypeCounts['2'];
 
 
-  // eslint-disable-next-line class-methods-use-this
+        const interpreterRatersAssigned = raterTypeCounts['3'];
+
+        const isPeType1 =
+          peTypeId === 1 &&
+          (deafRatersAssigned !== 3 ||
+            interpreterRatersAssigned !== 3 ||
+            cdiRatersAssigned !== 3);
+
+        const isPeType2 =
+          peTypeId === 2 &&
+          (deafRatersAssigned !== 3 || interpreterRatersAssigned !== 3 || cdiRatersAssigned !== 3);
+
+        const isPeType3 = peTypeId === 3 && cdiRatersAssigned !== 3;
+
+        return isPeType1 || isPeType2 || isPeType3 || ratingStartedClicked;
+      })
+    );
+
+    this.vm$ = combineLatest([
+      viewPeComponentAssignmentByRaters$,
+      viewRaters$,
+      raterTypeCounts$,
+      disableStartRatingButton$
+    ]).pipe(
+      tap(() => {
+        this.stateService.isLoading = false;
+      }),
+      map(([viewPeComponentAssignmentByRaters, viewRaters, raterTypeCounts, disableStartRatingButton]) => ({
+        viewPeComponentAssignmentByRaters,
+        viewRaters,
+        raterTypeCounts,
+        disableStartRatingButton
+      }))
+    );
+  }
+
+  // Rest of your methods...
+
   deleteRaterAssignment(payload: ViewPeComponentAssignmentByRater) {
     this.examsService
       .deleteRaterAssignment(payload)
@@ -145,7 +150,7 @@ ngOnInit() {
   }
 
   startRating() {
-    this.ratingStartedClicked = true;
+    this.ratingStartedClicked$.next(true);
     if (this.locationState?.data.peId) {
       this.examsService.startRating(this.locationState.data.peId);
       this.router.navigate(['dashboard/performance/exams/rating-assignments']);
@@ -192,5 +197,9 @@ ngOnInit() {
     return console.error(
       'Something went wrong navigating to the in progress rater component report',
     );
+  }
+
+  updateViewRaters() {
+    // Implement the logic of this method here...
   }
 }
