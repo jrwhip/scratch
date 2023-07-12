@@ -50,7 +50,7 @@ This workspace uses a variety of libraries and frameworks:
 
 This workspace has several shared libraries that are used across applications:
 
-- `@webteam-shared-client/shared/environments`: This library helps manage environment configuration for different settings for your local, development, QA, and production environments. This configuration includes settings like API endpoints, feature flags, and other environment-specific variables.
+- `@webteam-shared-client/shared/environments`: This library helps manage environment configuration for different settings for your local, development, QA, and production environments. This configuration includes settings like API endpoints, feature flags, client_id for authentication, and other environment-specific variables.
 
 - `@webteam-shared-client/shared/auth`: This library provides a centralized authentication and authorization service. It contains the required guards, interceptors, components, and services for authentication and authorization.
 
@@ -64,7 +64,9 @@ This workspace uses a custom Nx executor named `manifest`. This executor handles
 
 ### Linting
 
-Linting in the project is done using ESLint along with the Prettier formatter. Linting helps in maintaining a consistent code style across the workspace. Use `npm run lint` to check for lint errors, and `npm run format:write` to automatically fix many common formatting issues.
+Linting in the project is done using ESLint along with the Prettier formatter. The ESLint rules follow the widely adopted Airbnb JavaScript style guide to maintain a consistent code style across the workspace. Linting helps in ensuring code quality, readability, and maintainability by enforcing best practices and style guidelines.
+
+Use `npm run lint` to check for lint errors. To fix many common formatting issues automatically, use `npm run format:write`. In addition, `npm run format:check` can be used to check if the code conforms to the specified format.
 
 ## Further help
 
