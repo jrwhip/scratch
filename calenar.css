@@ -1,0 +1,79 @@
+.fc-button {
+  &.fc-today-button {
+    text-transform: capitalize;
+  }
+}
+
+.fc-event {
+  color: #999;
+  border: 2px solid #eee;
+  font-size: 0.85em;
+  border-radius: 2px;
+  padding: 2px;
+  margin-bottom: 2px;
+}
+
+.fc-event a {
+  color: #333;
+  text-decoration: underline;
+}
+
+.fc-event:not(.fc-event-past) {
+  background-color: #efefef;
+  border-color: #ddd;
+  color: #777;
+  cursor: pointer;
+  &.K {
+    &.available {
+      background-color: #c7d0ca;
+      border-color: #a1b0a6;
+      color: #0a100c;
+    }
+    &.reserved {
+      background-color: #698171;
+      border-color: #2e4c38;
+      color: #d9dfdb;
+      a {
+        color: #c7d0ca;
+      }
+    }
+  }
+  &.P {
+    &.available {
+      background-color: #f8ebe4;
+      border-color: #f5e5db;
+      color: #15110f;
+    }
+    &.reserved {
+      background-color: #bd9780;
+      border-color: #a88672;
+      color: #faf2ed;
+    }
+  }
+  &.M {
+    &.available {
+      background-color: #fae1e0;
+      border-color: #f8d7d6;
+      color: #160e0e;
+    }
+    &.reserved {
+      background-color: #c27976;
+      border-color: #ad6b69;
+      color: #fbebea;
+    }
+  }
+  &.reserved {
+    background-color: #030;
+    border-color: #090;
+    color: #fff;
+  }
+  &.selected {
+    background-color: #c7e2b7;
+    border-color: #b3d89c;
+    color: #11140f;
+  }
+}
+
+.fc-event-user {
+  min-height: 1em;
+}
