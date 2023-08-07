@@ -6,30 +6,54 @@ import { Subject, take } from 'rxjs';
 
 import { MODAL_DATA } from './modal-data.token';
 
+/**
+ * Interface for components that can be used as content in the dynamic modal.
+ * Components should implement this interface to ensure they have the necessary
+ * modalEvent property.
+ */
 export interface ModalContentComponent {
   modalEvent: EventEmitter<string>;
 }
 
+/**
+ * Interface for optional configuration options for the dynamic modal.
+ */
 export interface ModalOptions {
   disableClickOutsideToClose?: boolean;
   disableCloseIfLoading?: boolean;
 }
 
+/**
+ * Service for creating dynamic modals.
+ */
 @Injectable({
   providedIn: 'root',
 })
 export class DynamicModalService {
   private overlayRef: OverlayRef | null = null;
 
+  /**
+   * Subject that emits when a modal is closed.
+   */
   onModalClose$ = new Subject<void>();
 
   constructor(private overlay: Overlay, private injector: Injector) {}
 
+  /**
+   * Opens a dynamic modal with the given component as content.
+   *
+   * @example
+   * // Component should implement ModalContentComponent
+   * this.dynamicModalService.open(MyModalComponent);
+   *
+   * @param component - The component to use as content for the modal.
+   * @param payload - Optional data to pass to the modal component.
+   * @param options - Optional configuration options for the modal.
+   * @returns A ComponentRef for the created modal.
+   */
   open<T extends ModalContentComponent>(component: Type<T>, payload?: unknown, options?: ModalOptions): ComponentRef<T> {
-    // Returns an OverlayRef (which is a PortalHost)
     this.overlayRef = this.createOverlay();
 
-    // Instantiate remote control
     const componentPortal = new ComponentPortal(component, null, this.createInjector(payload));
 
     const componentRef: ComponentRef<T> = this.overlayRef.attach(componentPortal);
@@ -53,6 +77,12 @@ export class DynamicModalService {
     return componentRef;
   }
 
+  /**
+   * Closes the currently open modal, if any.
+   *
+   * @example
+   * this.dynamicModalService.close();
+   */
   close() {
     if (this.overlayRef) {
       this.overlayRef.dispose();
@@ -61,6 +91,12 @@ export class DynamicModalService {
     }
   }
 
+  /**
+   * Detaches the currently open modal, if any, without triggering the onModalClose$ event.
+   *
+   * @example
+   * this.dynamicModalService.closed();
+   */
   closed(): void {
     if (this.overlayRef) {
       this.overlayRef.detach();
@@ -68,6 +104,12 @@ export class DynamicModalService {
     }
   }
 
+  /**
+   * Creates an Injector with the given payload.
+   *
+   * @param payload - The data to use for the MODAL_DATA token.
+   * @returns An Injector that can be used for the ComponentPortal.
+   */
   private createInjector(payload: unknown): Injector {
     const injectionTokens = new WeakMap();
 
@@ -79,6 +121,11 @@ export class DynamicModalService {
     });
   }
 
+  /**
+   * Creates an OverlayRef with the default configuration for a modal.
+   *
+   * @returns An OverlayRef that can be used to attach a ComponentPortal.
+   */
   private createOverlay(): OverlayRef {
     const overlayConfig = new OverlayConfig({
       hasBackdrop: true,
