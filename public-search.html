@@ -5,19 +5,19 @@
 <ng-container *ngIf="viewProgramsDetailSummary; else noDetails">
   <div class="container">
     <div class="float-container">
-      <div class="g-col-md-6 float-child-1 head-prog-name">{{ viewProgramsDetailSummary.name }}</div>
-      <div class="g-col-md-6 float-child-2 filter-icon">
+      <div class="col-md-6 float-child-1 head-prog-name">{{ viewProgramsDetailSummary.name }}</div>
+      <div class="col-md-6 float-child-2 filter-icon">
         <img alt="back" src="assets/back-icon.png" />
-        <span class="search-results">
-          <a (click)="navigateToSearchResultsPage()" class="color-link hover" id="back-to-search"
+        <span class="search-results"
+          ><a (click)="navigateToSearchResultsPage()" class="color-link hover" id="back-to-search"
             >Back to search results</a
-          >
-        </span>
+          ></span
+        >
       </div>
     </div>
     <div class="float-container">
       <div class="photoSection">
-        <div class="g-col-lg-12">
+        <div class="col-lg-12">
           <div id="progcarousel" *ngIf="programPhotos.length > 0" class="carousel slide" data-bs-interval="false">
             <div class="carousel-inner">
               <div
@@ -28,6 +28,7 @@
                 <img class="d-block no-resize photoSize" [src]="photo.photo" alt="Photos Image" />
               </div>
             </div>
+
             <a
               class="carousel-control-prev-css carousel-prev"
               *ngIf="programPhotos.length > 1"
@@ -39,6 +40,7 @@
               <span class="carousel-control-prev-icon-new"></span>
               <span class="sr-only">Previous</span>
             </a>
+
             <a
               class="carousel-control-next-css carousel-next"
               *ngIf="programPhotos.length > 1"
@@ -52,8 +54,8 @@
             </a>
           </div>
         </div>
-        <span class="g-col-lg-3 photo"> </span>
-        <div class="g-col-md-6" *ngIf="programPhotos.length < 1">
+        <span class="col-lg-3 photo"> </span>
+        <div class="col-md-6" *ngIf="programPhotos.length < 1">
           <div class="imagePreview" *ngIf="viewProgramsDetailSummary.licenseType === 'Child Care Center'">
             <img class="photoSize" alt="Default Image" src="./assets/img/1694-center.png" />
           </div>
@@ -137,53 +139,331 @@
               viewProgramsDetailSummary.licenseType === ' in Provider\'s Home'
             "
           >
-            <img class="photoSize" alt="Default Image" src="./assets/img/3151--Provider-Home.png" />
+            <img class="photoSize" alt="Default Image" src="./assets/img/2949--prov-home.png" />
           </div>
           <div
             class="imagePreview"
             *ngIf="
-              viewProgramsDetailSummary.licenseType === 'Child Care Registered Teen Program, Background Checks by CCL'
+              viewProgramsDetailSummary.licenseType === 'Child Care Licensing Exempt Home / Tribe'
             "
           >
-            <img class="photoSize" alt="Default Image" src="./assets/img/3010-registered-teen-bg.png" />
+            <img class="photoSize" alt="Default Image" src="./assets/img/3110-lic-exempt-home.png" />
+          </div>
+        </div>
+      </div>
+      <div class="rightSection">
+        <div class="col-md-12 contactParent">
+          <div class="col-md-6 float-child-1 address">
+            <div class="col-md-6">
+              <div>
+                <span class="phone"> {{ viewProgramsDetailSummary.phone }} </span>
+              </div>
+              <br />
+              <ng-container *ngIf="programDistanceAway">
+                <div class="color-link">Distance Away: {{ programDistanceAway }} Miles Away</div>
+              </ng-container>
+            </div>
+          </div>
+          <div class="col-md-6 float-child-2 address" *ngIf="viewProgramsDetailSummary.progType === 'C'">
+            <div class="col-md-6">
+              <div class="col-md-12 well">
+                <span class="webEmail"
+                  >{{ viewProgramsDetailSummary.addressOne }}<span *ngIf="viewProgramsDetailSummary.addressTwo">
+                    {{ viewProgramsDetailSummary.addressTwo }}</span
+                  >
+                  <br
+                /></span>
+                <br />
+                <span class="webEmail">
+                  {{ viewProgramsDetailSummary.city }} , {{ viewProgramsDetailSummary.state }} {{
+                  viewProgramsDetailSummary.zipCode }} <br
+                /></span>
+              </div>
+            </div>
           </div>
           <div
-            class="imagePreview"
+            class="col-md-6 float-child-2 address"
             *ngIf="
-              viewProgramsDetailSummary.licenseType === 'Child Care Alternative Care, No Background Checks'
+              viewProgramsDetailSummary.progType === 'H' ||
+              viewProgramsDetailSummary.progType === 'F'
             "
           >
-            <img class="photoSize" alt="Default Image" src="./assets/img/3069-alt-care-no-bg.png" />
+            <div class="col-md-6">
+              <div class="col-md-12 well">
+                <span class="webHome">
+                  {{ viewProgramsDetailSummary.city }} , {{ viewProgramsDetailSummary.state }} {{
+                  viewProgramsDetailSummary.zipCode }} <br
+                /></span>
+              </div>
+            </div>
           </div>
-          <div
-            class="imagePreview"
-            *ngIf="
-              viewProgramsDetailSummary.licenseType === 'Child Care Registered Center Based Program, No Background Checks'
-            "
+        </div>
+        <div class="email">
+          <span class="website" *ngIf="viewProgramsDetailSummary.webSite !== null"
+            ><a rel="noopener noreferrer" target="_blank" [href]="websiteUrl" class="textFix" id="webSite">
+              {{ viewProgramsDetailSummary.webSite }}</a
+            ></span
           >
-            <img class="photoSize" alt="Default Image" src="./assets/img/3230-reg-center-no-bg.png" />
+
+          <span class="no-email" *ngIf="viewProgramsDetailSummary.webSite === null"> Website: not provided </span>
+          <br />
+          <span class="noWebNoEmailAdd" *ngIf="viewProgramsDetailSummary.showEmail === 'Y'">
+            <div *ngFor="let email of viewProgramsDetailSummary.email?.split(';')">
+              <a
+                rel="noopener noreferrer"
+                target="_blank"
+                [href]="'https://mail.google.com/mail/?view=cm&fs=1&tf=1&to=' + email"
+                class="textFix"
+                id="email"
+                >{{ email }}</a
+              >
+            </div>
+          </span>
+          <span class="no-email" *ngIf="viewProgramsDetailSummary.showEmail === 'N'"> Email: not provided </span>
+        </div>
+        <div class="programOverview">
+          <div class="spacer-50px"></div>
+          <span class="name"> Program Overview </span>
+          <div class="spacer-50px"></div>
+          <a
+            *ngIf="viewProgramsDetailSummary.licenseType !== null"
+            rel="noopener noreferrer"
+            target="_blank"
+            href="https://test.thmlink.com/childcare/childcare-licensing/"
+            class="license"
+            id="license"
+            >{{ viewProgramsDetailSummary.licenseType }}
+          </a>
+
+          <div class="col-md-12 contactParent">
+            <div class="float-child-1">
+              <div class="col-md-6 align-center">
+                <div class="number-child">{{ viewProgramsDetailSummary.totalChildren || '0' }}</div>
+                <div class="details text-center">Total Capacity</div>
+              </div>
+            </div>
+            <div class="float-child-2">
+              <div class="col-md-6 align-center">
+                <div class="number-vac">{{ viewProgramsDetailSummary.vacancies || 'N/A' }}</div>
+                <div class="details-vac text-center">Current Vacancies</div>
+              </div>
+            </div>
           </div>
-          <div
-            class="imagePreview"
-            *ngIf="
-              viewProgramsDetailSummary.licenseType === 'Child Care Registered Home Based Program, No Background Checks'
-            "
-          >
-            <img class="photoSize" alt="Default Image" src="./assets/img/3250-reg-home-no-bg.png" />
+          <div class="quality-rating-section">
+            <div class="child-container">
+              <div class="quality-rating-container">
+                <div class="quality-rating-title">
+                  <div class="quality-rating-content">
+                    Quality Rating
+                    <a class="question-mark-button" href="https://test.pdf" target="_blank" rel="noopener noreferrer">
+                      <div>?</div>
+                    </a>
+                    :
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="child-container">
+              <div class="quality-rating-container">
+                <div class="quality-rating-content">
+                  <ng-container *ngIf="viewProgramsDetailSummary.qrl">
+                    <div class="rectangles" [ngSwitch]="viewProgramsDetailSummary.qrl">
+                      <div *ngSwitchCase="'Default Foundation of Quality'">
+                        <img src="assets/quality-rating-rect-img.png" alt="rectangle" />
+                      </div>
+                      <div *ngSwitchCase="'Certified Foundation of Quality'">
+                        <img src="assets/quality-rating-rect-img.png" alt="rectangle" />
+                        <img src="assets/quality-rating-rect-img.png" alt="rectangle" />
+                      </div>
+                      <div *ngSwitchCase="'Certified Building Quality'">
+                        <img src="assets/quality-rating-rect-img.png" alt="rectangle" />
+                        <img src="assets/quality-rating-rect-img.png" alt="rectangle" />
+                        <img src="assets/quality-rating-rect-img.png" alt="rectangle" />
+                      </div>
+                      <div *ngSwitchCase="'Certified High Quality'">
+                        <img src="assets/quality-rating-rect-img.png" alt="rectangle" />
+                        <img src="assets/quality-rating-rect-img.png" alt="rectangle" />
+                        <img src="assets/quality-rating-rect-img.png" alt="rectangle" />
+                        <img src="assets/quality-rating-rect-img.png" alt="rectangle" />
+                      </div>
+                      <div *ngSwitchCase="'Certified High Quality Plus'">
+                        <img src="assets/quality-rating-rect-img.png" alt="rectangle" />
+                        <img src="assets/quality-rating-rect-img.png" alt="rectangle" />
+                        <img src="assets/quality-rating-rect-img.png" alt="rectangle" />
+                        <img src="assets/quality-rating-rect-img.png" alt="rectangle" />
+                        <img src="assets/quality-rating-rect-img.png" alt="rectangle" />
+                      </div>
+                    </div>
+                  </ng-container>
+                  <div class="quality-rating-link">{{ viewProgramsDetailSummary.qrl || 'Not Participating' }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="program-details-container">
+            <div class="child-container">
+              <div class="quality-rating-container">
+                <div class="quality-rating-item">
+                  <div>
+                    <a class="color-link" [href]="childCareLicensingUrl" target="_blank" rel="noopener noreferrer">
+                      <fa-icon [icon]="faArrowUpRightFromSquare"></fa-icon>
+                      Child Care Licensing Record</a
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="care-schedule">
+          <div class="spacer-50px"></div>
+          <div class="col-md-6">
+            <div class="col-md-12 well greenbg-border">
+              <div class="form-group courseschd" *ngFor="let schedule of programSchedules">
+                <span class="col-md-2 week">{{ schedule.dayOfWeekDisplay }}: </span>
+                <span class="col-md-7 time" *ngIf="schedule.startTime"
+                  >{{ schedule.startTime }}-{{ schedule.endTime }}</span
+                >
+                <span class="col-md-7 time" *ngIf="!schedule.startTime">Closed</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="spacer-50px"></div>
+        <div class="spacer-50px"></div>
+      </div>
+    </div>
+
+    <div class="program-details-container">
+      <div class="program-message-container">
+        <div class="child-container">
+          <div class="col-md-12 message-item">
+            <span class="about"> About the Program </span> <br /><br />
+            {{ viewProgramsDetailSummary.message === '' || viewProgramsDetailSummary.message === ' ' ? 'This program has
+            not yet filled in their program description.' : viewProgramsDetailSummary.message }}
           </div>
         </div>
       </div>
     </div>
-    <div class="float-container">
-      <div class="g-col-md-12">
-        <section class="disclaimer">
-          <div id="search-results"></div>
-          <p>information is provided for reference only</p>
-        </section>
+
+    <div class="program-details-container">
+      <div class="child-container">
+        <div class="grid-container">
+          <div class="program-item color-item">
+            <span class="item-title">Additional Care Options</span>
+            <div class="spacer-5px"></div>
+            <ul>
+              <li *ngFor="let careType of careTypeData">
+                <span class="color-text-attri">{{ careType }}</span>
+              </li>
+            </ul>
+          </div>
+          <div class="program-item color-item">
+            <span class="item-title">School(s) Served</span>
+            <div class="spacer-5px"></div>
+            <ul>
+              <li *ngFor="let schoolType of schoolData">
+                <span class="color-text-attri">{{ schoolType }}</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="child-container">
+        <div class="grid-container">
+          <div class="program-item color-item">
+            <span class="item-title">Age Groups</span>
+            <div class="spacer-5px"></div>
+            <ul>
+              <li *ngFor="let ageAccept of ageAcceptData">
+                <span class="color-text-attri">{{ ageAccept }}</span>
+              </li>
+            </ul>
+          </div>
+          <div class="program-item color-item">
+            <span class="item-title">Developmental Screening</span>
+            <div class="spacer-5px"></div>
+            <ul>
+              <li *ngFor="let screening of screeningData">
+                <span class="color-text-attri">{{ screening }}</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="child-container">
+        <div class="grid-container">
+          <div class="program-item color-item">
+            <span class="item-title">Languages</span>
+            <div class="spacer-5px"></div>
+            <ul>
+              <li *ngFor="let language of languageData">
+                <span class="color-text-attri">{{ language }}</span>
+              </li>
+            </ul>
+          </div>
+          <div class="program-item color-item">
+            <span class="item-title">Environment</span>
+            <div class="spacer-5px"></div>
+            <ul>
+              <li *ngFor="let envData of environmentData">
+                <span class="color-text-attri">{{ envData }}</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="child-container">
+        <div class="grid-container">
+          <div class="program-item color-item">
+            <span class="item-title">Meals Offered</span>
+            <div class="spacer-5px"></div>
+            <ul>
+              <li *ngFor="let mealType of mealsData">
+                <span class="color-text-attri">{{ mealType }}</span>
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="spacer-100px"></div>
+
+    <div class="program-details-container">
+      <div class="child-container">
+        <div class="grid-notes-container">
+          <div class="program-item color-notes">
+            <div class="spacer-100px"></div>
+            <div class="item-title-health">Health and Human Services - Child Care Licensing Record</div>
+            <div class="spacer-5px"></div>
+            <div class="color-text">
+              The following link displays only substantiated complaint allegations and cited findings for the past three
+              years. It does not include any inspections completed in the last 30 days.
+            </div>
+            <div class="spacer-5px"></div>
+            <div>
+              <a class="color-link" [href]="childCareLicensingUrl" target="_blank" rel="noopener noreferrer">
+                <fa-icon [icon]="faArrowUpRightFromSquare"></fa-icon>
+                Child Care Licensing Record</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <section class="disclaimer">
+        <div id="search-results"></div>
+
+        <p>information is provided for reference only</p>
+      </section>
+    </div>
   </div>
+
+  <div class="col-md-2"></div>
+
+  <div class="spacer-100px"></div>
 </ng-container>
 
 <ng-template #noDetails>

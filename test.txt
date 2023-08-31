@@ -1,0 +1,31 @@
+QuestionNum Sub-Topic TimeTaken AverageTimeTaken Result
+Components
+Classes
+State
+Configuration and Setup
+Props
+Events, Refs and Router
+JSX
+Lifecycle Methods
+Hooks and Context
+Components
+JSX
+Hooks and Context
+Configuration and Setup
+State
+Props
+Classes
+Events, Refs and Router
+Lifecycle Methods
+Hooks and Context
+Classes
+Events, Refs and Router
+Components
+Configuration and Setup
+Props
+State
+Lifecycle Methods
+JSX
+02:10 01:23 03:17 03:11 01:52 01:52 01:51 02:24 02:05 02:32 03:40 02:47 02:21 02:59 01:18 01:44 00:36 01:14 02:15 01:48 02:01 01:35 02:46 02:08 01:22 01:36 01:28 01:37 03:01 02:22 07:09 03:48 01:35 01:21 03:24 02:14 00:19 00:43 03:32 02:38 02:51 02:24 01:21 01:26 01:03 01:10 02:36 02:38 00:46 01:13 02:08 02:07 02:06 02:19
+Correct
+Correct Wrong Skipped Correct Partial Correct Partial Correct Partial Skipped Wrong Correct Correct Skipped Partial Partial Wrong Partial Partial Wrong Correct Partial Correct Wrong Partial Wrong

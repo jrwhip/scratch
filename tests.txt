@@ -1,0 +1,33 @@
+Of course. Let's organize the entire list:
+
+| QuestionNum | Sub-Topic               | TimeTaken | AverageTimeTaken | Result   |
+|-------------|-------------------------|-----------|------------------|----------|
+| 1           | Components              | 02:10     | 01:23            | Correct  |
+| 2           | Classes                 | 03:17     | 03:11            | Correct  |
+| 3           | State                   | 01:52     | 01:52            | Wrong    |
+| 4           | Configuration and Setup | 01:51     | 02:24            | Skipped  |
+| 5           | Props                   | 02:05     | 02:32            | Correct  |
+| 6           | Events, Refs and Router | 03:40     | 02:47            | Partial  |
+| 7           | JSX                     | 02:21     | 02:59            | Correct  |
+| 8           | Lifecycle Methods       | 01:18     | 01:44            | Partial  |
+| 9           | Hooks and Context       | 00:36     | 01:14            | Correct  |
+| 10          | Components              | 02:15     | 01:48            | Partial  |
+| 11          | JSX                     | 02:01     | 01:35            | Skipped  |
+| 12          | Hooks and Context       | 02:46     | 02:08            | Wrong    |
+| 13          | Configuration and Setup | 01:22     | 01:36            | Correct  |
+| 14          | State                   | 01:28     | 01:37            | Correct  |
+| 15          | Props                   | 03:01     | 02:22            | Skipped  |
+| 16          | Classes                 | 07:09     | 03:48            | Partial  |
+| 17          | Events, Refs and Router | 01:35     | 01:21            | Partial  |
+| 18          | Lifecycle Methods       | 03:24     | 02:14            | Wrong    |
+| 19          | Hooks and Context       | 00:19     | 00:43            | Partial  |
+| 20          | Classes                 | 03:32     | 02:38            | Partial  |
+| 21          | Events, Refs and Router | 02:51     | 02:24            | Wrong    |
+| 22          | Components              | 01:21     | 01:26            | Correct  |
+| 23          | Configuration and Setup | 01:03     | 01:10            | Partial  |
+| 24          | Props                   | 02:36     | 02:38            | Correct  |
+| 25          | State                   | 00:46     | 01:13            | Wrong    |
+| 26          | Lifecycle Methods       | 02:08     | 02:07            | Partial  |
+| 27          | JSX                     | 02:06     | 02:19            | Wrong    |
+
+This table should provide a clearer view of the candidate's performance across different sub-topics in the test.
